@@ -107,6 +107,46 @@ interface PsikonutrisenseApi {
     @PUT("wellbeing-screenings/{id}")
     suspend fun updateWellbeingScreening(@Header("Authorization") token: String, @Path("id") id: Int, @Body screening: WellbeingScreening): Response<ApiResponse<WellbeingScreening>>
 
+    // ===== MAIN GOALS (Tujuan Utama) =====
+    @GET("main-goals")
+    suspend fun getMainGoals(@Header("Authorization") token: String, @Query("mother_id") motherId: Int? = null): Response<ApiListResponse<MainGoal>>
+
+    @POST("main-goals")
+    suspend fun createMainGoal(@Header("Authorization") token: String, @Body goal: MainGoal): Response<ApiResponse<MainGoal>>
+
+    @PUT("main-goals/{id}")
+    suspend fun updateMainGoal(@Header("Authorization") token: String, @Path("id") id: Int, @Body goal: MainGoal): Response<ApiResponse<MainGoal>>
+
+    // ===== HEALTH CONDITIONS (Kondisi Kesehatan) =====
+    @GET("health-conditions")
+    suspend fun getHealthConditions(@Header("Authorization") token: String, @Query("child_id") childId: Int? = null): Response<ApiListResponse<HealthCondition>>
+
+    @POST("health-conditions")
+    suspend fun createHealthCondition(@Header("Authorization") token: String, @Body condition: HealthCondition): Response<ApiResponse<HealthCondition>>
+
+    @PUT("health-conditions/{id}")
+    suspend fun updateHealthCondition(@Header("Authorization") token: String, @Path("id") id: Int, @Body condition: HealthCondition): Response<ApiResponse<HealthCondition>>
+
+    // ===== FOOD GROUP FREQUENCIES (Asupan Pangan) =====
+    @GET("food-group-frequencies")
+    suspend fun getFoodGroupFrequencies(@Header("Authorization") token: String, @Query("child_id") childId: Int? = null): Response<ApiListResponse<FoodGroupFrequency>>
+
+    @POST("food-group-frequencies")
+    suspend fun createFoodGroupFrequency(@Header("Authorization") token: String, @Body record: FoodGroupFrequency): Response<ApiResponse<FoodGroupFrequency>>
+
+    @PUT("food-group-frequencies/{id}")
+    suspend fun updateFoodGroupFrequency(@Header("Authorization") token: String, @Path("id") id: Int, @Body record: FoodGroupFrequency): Response<ApiResponse<FoodGroupFrequency>>
+
+    // ===== FAVORITE LOCAL FOODS (Pangan Favorit) =====
+    @GET("favorite-local-foods")
+    suspend fun getFavoriteLocalFoods(@Header("Authorization") token: String, @Query("child_id") childId: Int? = null): Response<ApiListResponse<FavoriteLocalFood>>
+
+    @POST("favorite-local-foods")
+    suspend fun createFavoriteLocalFood(@Header("Authorization") token: String, @Body record: FavoriteLocalFood): Response<ApiResponse<FavoriteLocalFood>>
+
+    @PUT("favorite-local-foods/{id}")
+    suspend fun updateFavoriteLocalFood(@Header("Authorization") token: String, @Path("id") id: Int, @Body record: FavoriteLocalFood): Response<ApiResponse<FavoriteLocalFood>>
+
     // ===== LOCAL RECIPES =====
     @GET("local-recipes")
     suspend fun getRecipes(@Header("Authorization") token: String): Response<ApiListResponse<LocalRecipe>>

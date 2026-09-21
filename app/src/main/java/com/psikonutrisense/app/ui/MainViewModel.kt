@@ -61,6 +61,28 @@ class MainViewModel @Inject constructor(
     private val _actionState = MutableStateFlow<UiState<String>>(UiState.Idle)
     val actionState: StateFlow<UiState<String>> = _actionState.asStateFlow()
 
+    private val _healthConditionState = MutableStateFlow<UiState<HealthCondition?>>(UiState.Idle)
+    val healthConditionState: StateFlow<UiState<HealthCondition?>> = _healthConditionState.asStateFlow()
+
+    private val _nutritionState = MutableStateFlow<UiState<NutritionRecord?>>(UiState.Idle)
+    val nutritionState: StateFlow<UiState<NutritionRecord?>> = _nutritionState.asStateFlow()
+
+    private val _foodGroupState = MutableStateFlow<UiState<FoodGroupFrequency?>>(UiState.Idle)
+    val foodGroupState: StateFlow<UiState<FoodGroupFrequency?>> = _foodGroupState.asStateFlow()
+
+    private val _favoriteFoodState = MutableStateFlow<UiState<FavoriteLocalFood?>>(UiState.Idle)
+    val favoriteFoodState: StateFlow<UiState<FavoriteLocalFood?>> = _favoriteFoodState.asStateFlow()
+
+    private val _wellbeingState = MutableStateFlow<UiState<WellbeingScreening?>>(UiState.Idle)
+    val wellbeingState: StateFlow<UiState<WellbeingScreening?>> = _wellbeingState.asStateFlow()
+
+    private val _mainGoalState = MutableStateFlow<UiState<MainGoal?>>(UiState.Idle)
+    val mainGoalState: StateFlow<UiState<MainGoal?>> = _mainGoalState.asStateFlow()
+
+    // null while loading, then true only once the wizard's last step (Tujuan Utama) has been saved
+    private val _wizardComplete = MutableStateFlow<Boolean?>(null)
+    val wizardComplete: StateFlow<Boolean?> = _wizardComplete.asStateFlow()
+
     // Profile completeness check state
     // null = not checked yet, true = complete, false = needs onboarding
     private val _profileComplete = MutableStateFlow<Boolean?>(null)
@@ -144,6 +166,7 @@ class MainViewModel @Inject constructor(
                 _profileComplete.value = false
                 return@launch
             }
+            _mothersState.value = UiState.Success(mothers)
 
             val childrenResult = repository.getChildren()
             val children = childrenResult.getOrDefault(emptyList())
@@ -153,6 +176,7 @@ class MainViewModel @Inject constructor(
                 _profileComplete.value = false
                 return@launch
             }
+            _childrenState.value = UiState.Success(children)
 
             // Both exist
             _profileComplete.value = true
@@ -231,6 +255,7 @@ class MainViewModel @Inject constructor(
             repository.createMother(mother)
                 .onSuccess {
                     _onboardingMotherId.value = it.id
+                    _mothersState.value = UiState.Success(listOf(it))
                     _onboardingSaveState.value = UiState.Success("Data Ibu berhasil disimpan")
                 }
                 .onFailure {
@@ -280,6 +305,7 @@ class MainViewModel @Inject constructor(
             val childWithMotherId = child.copy(motherId = motherId)
             repository.createChild(childWithMotherId)
                 .onSuccess {
+                    _childrenState.value = UiState.Success(listOf(it))
                     _onboardingSaveState.value = UiState.Success("Data Anak berhasil disimpan")
                 }
                 .onFailure {
@@ -381,5 +407,146 @@ class MainViewModel @Inject constructor(
 
     fun resetActionState() {
         _actionState.value = UiState.Idle
+    }
+
+    /**
+     * Checks whether the mandatory one-time health-profile wizard was already
+     * completed for this mother — used by a mother who already has a `main_goals`
+     * row (the wizard's last step) so returning users aren't routed through it again.
+     */
+    fun checkWizardComplete(motherId: Int) {
+        viewModelScope.launch {
+            _wizardComplete.value = null
+            val goals = repository.getMainGoals(motherId).getOrDefault(emptyList())
+            _wizardComplete.value = goals.isNotEmpty()
+        }
+    }
+
+    fun loadHealthCondition(childId: Int) {
+        viewModelScope.launch {
+            _healthConditionState.value = UiState.Loading
+            repository.getHealthConditions(childId)
+                .onSuccess { _healthConditionState.value = UiState.Success(it.firstOrNull()) }
+                .onFailure { _healthConditionState.value = UiState.Error(it.message ?: "Gagal memuat kondisi kesehatan") }
+        }
+    }
+
+    fun saveHealthCondition(condition: HealthCondition) {
+        viewModelScope.launch {
+            _actionState.value = UiState.Loading
+            val result = if (condition.id != 0) repository.updateHealthCondition(condition.id, condition) else repository.createHealthCondition(condition)
+            result.onSuccess {
+                _actionState.value = UiState.Success("Kondisi Kesehatan berhasil disimpan")
+            }.onFailure {
+                _actionState.value = UiState.Error(it.message ?: "Gagal menyimpan kondisi kesehatan")
+            }
+        }
+    }
+
+    fun loadNutrition(childId: Int) {
+        viewModelScope.launch {
+            _nutritionState.value = UiState.Loading
+            repository.getNutritionRecords(childId)
+                .onSuccess { _nutritionState.value = UiState.Success(it.firstOrNull()) }
+                .onFailure { _nutritionState.value = UiState.Error(it.message ?: "Gagal memuat data menyusui") }
+        }
+    }
+
+    fun saveNutrition(record: NutritionRecord) {
+        viewModelScope.launch {
+            _actionState.value = UiState.Loading
+            val result = if (record.id != 0) repository.updateNutritionRecord(record.id, record) else repository.createNutritionRecord(record)
+            result.onSuccess {
+                _actionState.value = UiState.Success("Data Menyusui & MPASI berhasil disimpan")
+            }.onFailure {
+                _actionState.value = UiState.Error(it.message ?: "Gagal menyimpan data menyusui")
+            }
+        }
+    }
+
+    fun loadFoodGroupFrequency(childId: Int) {
+        viewModelScope.launch {
+            _foodGroupState.value = UiState.Loading
+            repository.getFoodGroupFrequencies(childId)
+                .onSuccess { _foodGroupState.value = UiState.Success(it.firstOrNull()) }
+                .onFailure { _foodGroupState.value = UiState.Error(it.message ?: "Gagal memuat asupan pangan") }
+        }
+    }
+
+    fun saveFoodGroupFrequency(record: FoodGroupFrequency) {
+        viewModelScope.launch {
+            _actionState.value = UiState.Loading
+            val result = if (record.id != 0) repository.updateFoodGroupFrequency(record.id, record) else repository.createFoodGroupFrequency(record)
+            result.onSuccess {
+                _actionState.value = UiState.Success("Data Asupan Pangan berhasil disimpan")
+            }.onFailure {
+                _actionState.value = UiState.Error(it.message ?: "Gagal menyimpan asupan pangan")
+            }
+        }
+    }
+
+    fun loadFavoriteLocalFood(childId: Int) {
+        viewModelScope.launch {
+            _favoriteFoodState.value = UiState.Loading
+            repository.getFavoriteLocalFoods(childId)
+                .onSuccess { _favoriteFoodState.value = UiState.Success(it.firstOrNull()) }
+                .onFailure { _favoriteFoodState.value = UiState.Error(it.message ?: "Gagal memuat pangan favorit") }
+        }
+    }
+
+    fun saveFavoriteLocalFood(record: FavoriteLocalFood) {
+        viewModelScope.launch {
+            _actionState.value = UiState.Loading
+            val result = if (record.id != 0) repository.updateFavoriteLocalFood(record.id, record) else repository.createFavoriteLocalFood(record)
+            result.onSuccess {
+                _actionState.value = UiState.Success("Pangan Favorit berhasil disimpan")
+            }.onFailure {
+                _actionState.value = UiState.Error(it.message ?: "Gagal menyimpan pangan favorit")
+            }
+        }
+    }
+
+    fun loadWellbeing(motherId: Int) {
+        viewModelScope.launch {
+            _wellbeingState.value = UiState.Loading
+            repository.getWellbeingScreenings(motherId)
+                .onSuccess { _wellbeingState.value = UiState.Success(it.firstOrNull()) }
+                .onFailure { _wellbeingState.value = UiState.Error(it.message ?: "Gagal memuat kondisi psikososial") }
+        }
+    }
+
+    fun saveWellbeing(screening: WellbeingScreening) {
+        viewModelScope.launch {
+            _actionState.value = UiState.Loading
+            val result = if (screening.id != 0) repository.updateWellbeingScreening(screening.id, screening) else repository.createWellbeingScreening(screening)
+            result.onSuccess {
+                _wellbeingState.value = UiState.Success(it)
+                _actionState.value = UiState.Success("Kondisi Psikososial berhasil disimpan")
+            }.onFailure {
+                _actionState.value = UiState.Error(it.message ?: "Gagal menyimpan kondisi psikososial")
+            }
+        }
+    }
+
+    fun loadMainGoal(motherId: Int) {
+        viewModelScope.launch {
+            _mainGoalState.value = UiState.Loading
+            repository.getMainGoals(motherId)
+                .onSuccess { _mainGoalState.value = UiState.Success(it.firstOrNull()) }
+                .onFailure { _mainGoalState.value = UiState.Error(it.message ?: "Gagal memuat tujuan utama") }
+        }
+    }
+
+    fun saveMainGoal(goal: MainGoal) {
+        viewModelScope.launch {
+            _actionState.value = UiState.Loading
+            val result = if (goal.id != 0) repository.updateMainGoal(goal.id, goal) else repository.createMainGoal(goal)
+            result.onSuccess {
+                _actionState.value = UiState.Success("Tujuan Utama berhasil disimpan")
+                _wizardComplete.value = true
+            }.onFailure {
+                _actionState.value = UiState.Error(it.message ?: "Gagal menyimpan tujuan utama")
+            }
+        }
     }
 }

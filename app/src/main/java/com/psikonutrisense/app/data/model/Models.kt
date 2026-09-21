@@ -57,7 +57,10 @@ data class Child(
     @SerializedName("jumlah_saudara") val jumlahSaudara: Int = 0,
     @SerializedName("bb_lahir_kg") val bbLahirKg: Double? = null,
     @SerializedName("pb_lahir_cm") val pbLahirCm: Double? = null,
-    @SerializedName("lahir_prematur") val lahirPrematur: Boolean = false
+    @SerializedName("lahir_prematur") val lahirPrematur: Boolean = false,
+    @SerializedName("jenis_persalinan") val jenisPersalinan: String? = null,
+    @SerializedName("usia_kehamilan_minggu") val usiaKehamilanMinggu: Int? = null,
+    @SerializedName("status_kepemilikan_kia") val statusKepemilikanKia: Boolean = false
 )
 
 // ===========================
@@ -101,18 +104,68 @@ data class PmtLog(
 )
 
 // ===========================
-// Nutrition Record
+// Nutrition Record (Menyusui & MPASI)
 // ===========================
 data class NutritionRecord(
     val id: Int = 0,
     @SerializedName("child_id") val childId: Int = 0,
     @SerializedName("asi_eksklusif") val asiEksklusif: Boolean = true,
+    @SerializedName("masih_menyusui") val masihMenyusui: Boolean = true,
     @SerializedName("usia_mulai_mpasi_bulan") val usiaMulaiMpasiBulan: Int = 6,
+    @SerializedName("jenis_mpasi_json") val jenisMpasiJson: List<String> = emptyList(),
     @SerializedName("frekuensi_makan_per_hari") val frekuensiMakanPerHari: Int = 3,
-    @SerializedName("frekuensi_protein_hewani_per_minggu") val frekuensiProteinHewaniPerMinggu: Int = 0,
+    @SerializedName("frekuensi_camilan_per_hari") val frekuensiCamilanPerHari: Int = 0,
     @SerializedName("recall_24jam_menu") val recall24jamMenu: String? = null,
-    @SerializedName("pangan_lokal_favorit") val panganLokalFavorit: String? = null,
     @SerializedName("kendala_pemberian_makan") val kendalaPemberianMakan: String? = null
+)
+
+// ===========================
+// Food Group Frequency (Asupan Pangan)
+// ===========================
+data class FoodGroupFrequency(
+    val id: Int = 0,
+    @SerializedName("child_id") val childId: Int = 0,
+    @SerializedName("tanggal_pencatatan") val tanggalPencatatan: String = "",
+    @SerializedName("nasi_bubur") val nasiBubur: String = "",
+    @SerializedName("lauk_hewani") val laukHewani: String = "",
+    @SerializedName("lauk_nabati") val laukNabati: String = "",
+    val sayur: String = "",
+    val buah: String = "",
+    val susu: String = ""
+)
+
+// ===========================
+// Favorite Local Food (Pangan Favorit)
+// ===========================
+data class FavoriteLocalFood(
+    val id: Int = 0,
+    @SerializedName("child_id") val childId: Int = 0,
+    @SerializedName("bahan_json") val bahanJson: List<String> = emptyList(),
+    @SerializedName("bahan_lainnya") val bahanLainnya: String? = null
+)
+
+// ===========================
+// Health Condition (Kondisi Kesehatan)
+// ===========================
+data class HealthCondition(
+    val id: Int = 0,
+    @SerializedName("child_id") val childId: Int = 0,
+    @SerializedName("pernah_dirawat_rs") val pernahDirawatRs: Boolean = false,
+    @SerializedName("sering_sakit_3bulan") val seringSakit3bulan: Boolean = false,
+    @SerializedName("alergi_makanan_obat") val alergiMakananObat: Boolean = false,
+    @SerializedName("keterangan_alergi") val keteranganAlergi: String? = null,
+    @SerializedName("status_imunisasi_ringkasan") val statusImunisasiRingkasan: String = "Lengkap"
+)
+
+// ===========================
+// Main Goal (Tujuan Utama)
+// ===========================
+data class MainGoal(
+    val id: Int = 0,
+    @SerializedName("mother_id") val motherId: Int = 0,
+    @SerializedName("tujuan_utama") val tujuanUtama: String = "",
+    @SerializedName("harapan_untuk_anak") val harapanUntukAnak: String? = null,
+    @SerializedName("bersedia_ikut_intervensi") val bersediaIkutIntervensi: Boolean = true
 )
 
 // ===========================
@@ -123,8 +176,13 @@ data class WellbeingScreening(
     @SerializedName("mother_id") val motherId: Int = 0,
     @SerializedName("frekuensi_interaksi_bermain") val frekuensiInteraksiBermain: Int = 3,
     @SerializedName("pengasuh_utama") val pengasuhUtama: String = "Ibu Kandung",
-    @SerializedName("skor_dukungan_keluarga") val skorDukunganKeluarga: Int = 3,
-    @SerializedName("epds_skor_5item") val epdsSkor5item: Int = 0,
+    @SerializedName("skor_cemas_berlebihan") val skorCemasBerlebihan: Int = 0,
+    @SerializedName("skor_mudah_lelah") val skorMudahLelah: Int = 0,
+    @SerializedName("skor_sedih_tanpa_sebab") val skorSedihTanpaSebab: Int = 0,
+    @SerializedName("skor_didukung_keluarga_umum") val skorDidukungKeluargaUmum: Int = 0,
+    @SerializedName("dukungan_emosional") val dukunganEmosional: Int = 0,
+    @SerializedName("dukungan_informasi") val dukunganInformasi: Int = 0,
+    @SerializedName("dukungan_praktis") val dukunganPraktis: Int = 0,
     @SerializedName("kategori_kesejahteraan") val kategoriKesejahteraan: String = "Tenang & Bahagia",
     @SerializedName("cukup_informasi_gizi") val cukupInformasiGizi: String = "Ya",
     @SerializedName("sumber_informasi_terpercaya") val sumberInformasiTerpercaya: String = "Posyandu"

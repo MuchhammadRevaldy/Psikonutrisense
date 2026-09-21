@@ -1,6 +1,7 @@
 package com.psikonutrisense.app.ui.screens
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.psikonutrisense.app.R
 import com.psikonutrisense.app.data.model.*
 import com.psikonutrisense.app.ui.UiState
 import com.psikonutrisense.app.ui.theme.*
@@ -79,6 +82,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -406,11 +410,11 @@ fun ProfilAnakSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CategoryItem(icon = "🌱", label = "Tumbuh", onClick = onNavigateToGrowthChart)
-            CategoryItem(icon = "🥩", label = "Makan", onClick = onNavigateToResep)
-            CategoryItem(icon = "🛡️", label = "Imunisasi", onClick = onNavigateToImunisasi)
-            CategoryItem(icon = "🧩", label = "Psikososial", onClick = onNavigateToPsikososial)
-            CategoryItem(icon = "📚", label = "Edukasi", onClick = onNavigateToEdukasi)
+            CategoryItem(iconRes = R.drawable.logo_tumbuh, label = "Tumbuh", onClick = onNavigateToGrowthChart)
+            CategoryItem(iconRes = R.drawable.logo_makan, label = "Makan", onClick = onNavigateToResep)
+            CategoryItem(iconRes = R.drawable.logo_imunisasi, label = "Imunisasi", onClick = onNavigateToImunisasi)
+            CategoryItem(iconRes = R.drawable.logo_psikososial, label = "Psikososial", onClick = onNavigateToPsikososial)
+            CategoryItem(iconRes = R.drawable.logo_edukasi, label = "Edukasi", onClick = onNavigateToEdukasi)
         }
     }
 }
@@ -446,7 +450,7 @@ private fun calculateAgeString(birthDateStr: String): String {
 }
 
 @Composable
-fun CategoryItem(icon: String, label: String, onClick: () -> Unit) {
+fun CategoryItem(iconRes: Int, label: String, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -460,7 +464,11 @@ fun CategoryItem(icon: String, label: String, onClick: () -> Unit) {
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = icon, fontSize = 22.sp)
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = label,
+                modifier = Modifier.size(28.dp)
+            )
         }
         Text(
             text = label,

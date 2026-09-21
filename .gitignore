@@ -1,0 +1,35 @@
+# Laravel backend
+backend/vendor/
+backend/.env
+backend/storage/*.key
+backend/storage/framework/cache/*
+!backend/storage/framework/cache/.gitkeep
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitkeep
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitkeep
+backend/storage/logs/*
+!backend/storage/logs/.gitkeep
+backend/storage/app/*
+!backend/storage/app/.gitkeep
+!backend/storage/app/public
+backend/storage/app/public/*
+!backend/storage/app/public/.gitkeep
+backend/bootstrap/cache/*
+!backend/bootstrap/cache/.gitkeep
+backend/.phpunit.result.cache
+
+# Android app
+app/build/
+.gradle/
+local.properties
+*.apk
+*.aab
+.idea/
+*.iml
+.cxx/
+captures/
+
+# OS
+.DS_Store
+Thumbs.db

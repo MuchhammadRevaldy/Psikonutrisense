@@ -18,7 +18,10 @@ class Child extends Model
         'jumlah_saudara',
         'bb_lahir_kg',
         'pb_lahir_cm',
-        'lahir_prematur'
+        'lahir_prematur',
+        'jenis_persalinan',
+        'usia_kehamilan_minggu',
+        'status_kepemilikan_kia'
     ];
 
     public function mother()

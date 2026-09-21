@@ -1,0 +1,461 @@
+<title>Psikonutrisense PRD</title>
+<style>
+  :root {
+    --accent: #B33B5E;
+    --accent-dark: #8F2945;
+    --accent-soft: #FBE7EC;
+    --bg: #FFFBF9;
+    --surface: #FFFFFF;
+    --text: #2D2729;
+    --text-muted: #8A6C75;
+    --border: #EEDFE4;
+    --good: #2E7D4F;
+    --good-bg: #E7F5EC;
+    --warn: #B4650A;
+    --warn-bg: #FDF0DE;
+    --bad: #C23050;
+    --bad-bg: #FBE7EC;
+    --code-bg: #2D2729;
+    --code-text: #F4E9EC;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #201A1C;
+      --surface: #2A2224;
+      --text: #F3E9EB;
+      --text-muted: #C3A7AF;
+      --border: #43363A;
+      --accent-soft: #3D2530;
+      --good-bg: #1E3327;
+      --warn-bg: #3A2C15;
+      --bad-bg: #3A2129;
+      --code-bg: #14100F;
+      --code-text: #F3E9EB;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #201A1C;
+    --surface: #2A2224;
+    --text: #F3E9EB;
+    --text-muted: #C3A7AF;
+    --border: #43363A;
+    --accent-soft: #3D2530;
+    --good-bg: #1E3327;
+    --warn-bg: #3A2C15;
+    --bad-bg: #3A2129;
+    --code-bg: #14100F;
+    --code-text: #F3E9EB;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Plus Jakarta Sans", -apple-system, sans-serif;
+    padding: 0 16px;
+    padding-block: 40px;
+    line-height: 1.6;
+  }
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  h1, h2, h3 {
+    font-family: "Fraunces", Georgia, serif;
+    color: var(--accent-dark);
+    text-wrap: balance;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 16px;
+    margin: 0 0 4px;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 18px 0 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .meta b { color: var(--text); }
+
+  h2 {
+    font-size: 24px;
+    margin: 48px 0 16px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  h2:first-of-type { border-top: none; }
+  h3 {
+    font-size: 17px;
+    color: var(--text);
+    margin: 28px 0 10px;
+  }
+  p { margin: 0 0 14px; }
+  ul, ol { margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--text); }
+
+  .lede {
+    font-size: 17px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+  }
+
+  .grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0 24px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .card .n {
+    font-family: "Fraunces", serif;
+    font-size: 26px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .card .l {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .table-wrap { overflow-x: auto; margin: 0 0 24px; border-radius: 12px; }
+  .table-wrap table { margin: 0; }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+
+  pre.mermaid {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    overflow-x: auto;
+  }
+
+  pre.code {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 16px 18px;
+    border-radius: 12px;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin: 0 0 20px;
+  }
+  code.inline {
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.9em;
+  }
+
+  .finding {
+    border-left: 3px solid var(--bad);
+    background: var(--surface);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    margin: 0 0 12px;
+  }
+  .finding.warn { border-left-color: var(--warn); }
+  .finding.good { border-left-color: var(--good); }
+  .finding .t { font-weight: 700; margin-bottom: 4px; }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12.5px;
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<div class="page">
+
+  <h1>Psikonutrisense — PRD &amp; Data Audit</h1>
+  <p class="subtitle">Disusun dari analisis 17 mockup desain aktual di <code class="inline">/design</code>, dicocokkan dengan kode aplikasi Android dan skema database yang berjalan saat ini.</p>
+  <div class="meta">
+    <span>Versi <b>2.1 — Ground Truth dari Desain + Silang-cek Dokumen Kebutuhan</b></span>
+    <span>21 September 2026</span>
+    <span>Menggantikan asumsi di <code class="inline">PRD_PSIKONUTRISENSE.md v1.0</code></span>
+  </div>
+
+  <div class="lede">
+    Dokumen v1.0 sebelumnya ditulis sebelum desain final ada, jadi beberapa modul di sana bersifat aspirasional. Dokumen ini disusun dari <strong>17 file desain yang benar-benar ada</strong> (dibaca satu per satu), dibandingkan langsung dengan layar Compose, model Kotlin, controller Laravel, dan skema SQL yang aktif — sehingga setiap klaim di sini bisa ditelusuri ke file sumbernya.
+  </div>
+
+  <div class="grid-cards">
+    <div class="card"><div class="n">17</div><div class="l">Layar desain dianalisis</div></div>
+    <div class="card"><div class="n">11</div><div class="l">Tabel database aktif</div></div>
+    <div class="card"><div class="n">6</div><div class="l">Layar UI belum tersambung data</div></div>
+    <div class="card"><div class="n">2</div><div class="l">Modul tanpa tabel sama sekali</div></div>
+  </div>
+
+  <h2 id="ringkasan">1. Ringkasan Eksekutif</h2>
+  <p>Psikonutrisense adalah aplikasi Android (Kotlin + Jetpack Compose) dengan backend Laravel, untuk memantau tumbuh kembang balita dan kesejahteraan psikososial ibu di Kelurahan Ngeposari sebagai bagian dari intervensi pencegahan stunting. Dari 17 layar yang didesain, <strong>11 sudah punya alur data end-to-end</strong> (splash → login → data ibu/anak → antropometri → imunisasi → resep), sementara <strong>6 layar lain masih berupa tampilan statis</strong> tanpa form yang tersambung ke database — Kondisi Kesehatan, Riwayat Menyusui &amp; MPASI, Asupan Pangan, Pangan Favorit, Kondisi Psikososial Ibu, dan Tujuan Utama.</p>
+  <p>Audit skema menemukan bahwa struktur data untuk modul gizi (<code class="inline">nutrition_records</code>) dan psikososial (<code class="inline">mother_wellbeing_screenings</code>) sudah ada namun <strong>tidak cocok dengan field yang ditampilkan di desain</strong> — beberapa kolom terlalu digeneralisasi (satu skor gabungan, padahal desain minta rincian per pertanyaan), dan dua modul (Kondisi Kesehatan, Tujuan Utama) tidak punya tabel sama sekali. Rincian lengkap ada di bagian 4.</p>
+
+  <h2 id="sumber">1.1 Silang-cek dengan Dokumen Kebutuhan Awal</h2>
+  <p>Dokumen <code class="inline">ISIAN_PLATFORM_DIGITAL_PSIKONUTRISENSE_dengan_Imunisasi</code> (47 item pertanyaan, Modul A–G) adalah spesifikasi tertulis sebelum desain dibuat. Membandingkannya dengan 17 desain aktual menghasilkan 3 temuan baru yang memperkuat/melengkapi audit ini:</p>
+  <div class="finding good">
+    <div class="t">Konfirmasi: 6 layar yang belum tersambung memang satu wizard berurutan, bukan menu tersebar</div>
+    Dokumen ini memuat contoh alur isian dengan urutan eksplisit: <em>Data Ibu → Data Anak → Data Kelahiran → Riwayat Kesehatan Anak → Riwayat Menyusui &amp; MPASI → Asupan Pangan Anak → Pangan Lokal Favorit → Kondisi Psikososial Ibu → Dukungan Keluarga → Tujuan &amp; Harapan.</em> Ini persis cocok dengan urutan penomoran desain #08→#19, memastikan diagram alur di §3 bukan tebakan.
+  </div>
+  <div class="finding warn">
+    <div class="t">Ditemukan langkah "Data Kelahiran" tersendiri — memperkuat rekomendasi §4.1</div>
+    Dokumen sumber memisahkan "Data Kelahiran" sebagai langkah ke-3 yang berdiri sendiri, terpisah dari "Data Anak" (langkah 2) maupun pengukuran bulanan. Ini menguatkan rekomendasi P0: <code class="inline">jenis_persalinan</code> &amp; <code class="inline">usia_kehamilan_minggu</code> sebaiknya jadi bagian dari data anak yang diisi sekali, sesuai maksud aslinya — bukan tercampur ke form Antropometri berulang seperti di desain #10.
+  </div>
+  <div class="finding bad">
+    <div class="t">Modul F (Sanitasi) — kebalikan dari modul lain: tabel sudah ada, desainnya yang belum dibuat</div>
+    Modul F di dokumen sumber (sumber air minum, jamban sehat, jarak Posyandu, kepesertaan BPJS/JKN — item 44–47) sudah punya tabel <code class="inline">sanitation_facilities</code> lengkap di database, tapi <strong>tidak ada satu pun dari 17 file desain</strong> yang menampilkan layar untuk mengisinya. Table ini saat ini tidak terpakai (orphaned) sampai layarnya dibuat.
+  </div>
+  <div class="finding warn">
+    <div class="t">Modul G — fitur gamifikasi &amp; komunitas sebagian besar belum dimulai</div>
+    Dari 9 fitur di Modul G dokumen sumber, hanya <strong>poin &amp; lencana ibu aktif</strong> yang sudah ada (kolom <code class="inline">poin_ibu_aktif</code>/<code class="inline">lencana_aktif</code> di <code class="inline">mothers</code>, tampil di Home #01). Forum Ibu Balita, Konsultasi/Chat Kader-Bidan, Video Edukasi sebagai konten dinamis, dan reminder H-3 otomatis <strong>tidak punya tabel maupun desain sama sekali</strong> — ini backlog fitur baru, bukan bug pada yang sudah ada.
+  </div>
+
+  <h2 id="inventaris">2. Inventaris Layar (dari Desain)</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>#</th><th>Layar</th><th>Fungsi Utama</th><th>Status di App</th></tr>
+    <tr><td>01</td><td>Home</td><td>Dashboard ringkas: kondisi ibu, profil anak, PMT harian, target minggu ini, status gizi, imunisasi berikutnya</td><td><span class="badge good">Tersambung penuh</span></td></tr>
+    <tr><td>02</td><td>Grafik Pertumbuhan</td><td>Kurva WHO 4 indikator (BB/U, TB/U, BB/TB, IMT/U) + riwayat pengukuran</td><td><span class="badge good">Tersambung penuh</span></td></tr>
+    <tr><td>03</td><td>Intervensi</td><td>Tab Psikososial / Gizi / Aktivitas — kartu konten edukasi &amp; konseling</td><td><span class="badge warn">UI statis (konten hardcode)</span></td></tr>
+    <tr><td>04–05</td><td>Resep &amp; Resep Detail</td><td>Daftar &amp; detail resep pangan lokal MPASI</td><td><span class="badge good">Tersambung penuh</span></td></tr>
+    <tr><td>07</td><td>Edukasi &amp; Pengingat</td><td>Artikel edukasi + kartu pengingat imunisasi berikutnya</td><td><span class="badge warn">UI statis (konten hardcode)</span></td></tr>
+    <tr><td>08</td><td>Data Diri Ibu</td><td>Form profil ibu — CRUD penuh</td><td><span class="badge good">Tersambung penuh (load/update/hapus)</span></td></tr>
+    <tr><td>09</td><td>Data Diri Anak</td><td>Form profil anak — CRUD penuh</td><td><span class="badge good">Tersambung penuh (load/update/hapus)</span></td></tr>
+    <tr><td>10</td><td>Data Antropometri</td><td>Input pengukuran bulanan <em>+ field kelahiran (persalinan, usia kehamilan)</em></td><td><span class="badge warn">Tersambung, tapi field kelahiran salah tempat — lihat §4.1</span></td></tr>
+    <tr><td>11</td><td>Kondisi Kesehatan</td><td>Riwayat rawat inap, sakit 3 bulan terakhir, alergi, status imunisasi</td><td><span class="badge bad">Tidak ada tabel &amp; tidak tersambung</span></td></tr>
+    <tr><td>13</td><td>Riwayat Menyusui &amp; MPASI</td><td>Status menyusui, usia mulai MPASI, jenis MPASI, frekuensi makan/camilan, kendala</td><td><span class="badge bad">Skema tidak cocok — lihat §4.2</span></td></tr>
+    <tr><td>14</td><td>Asupan Pangan</td><td>Frekuensi per hari untuk 6 kelompok pangan (nasi, hewani, nabati, sayur, buah, susu)</td><td><span class="badge bad">Tidak ada tabel — model saat ini cuma 1 kolom</span></td></tr>
+    <tr><td>15</td><td>Pangan Favorit</td><td>Checklist multi-pilih bahan pangan lokal favorit keluarga</td><td><span class="badge bad">Model saat ini cuma 1 kolom teks bebas</span></td></tr>
+    <tr><td>16</td><td>Riwayat Imunisasi</td><td>Tabel riwayat imunisasi (10 baris granular) + info jadwal berikutnya</td><td><span class="badge good">Tersambung (CRUD baru ditambahkan)</span></td></tr>
+    <tr><td>17–18</td><td>Kondisi Psikososial Ibu (2 layar)</td><td>Skala 0–4: cemas, lelah, sedih, dukungan keluarga (umum + rinci emosional/informasi/praktis)</td><td><span class="badge bad">Skema tidak cocok — lihat §4.3</span></td></tr>
+    <tr><td>19</td><td>Tujuan Utama</td><td>Pilihan tujuan program, harapan bebas teks, kesediaan ikut intervensi</td><td><span class="badge bad">Tidak ada tabel &amp; tidak tersambung</span></td></tr>
+  </table>
+  </div>
+  <p style="color:var(--text-muted); font-size:13px;">Catatan: penomoran 06 dan 12 memang tidak ada berkasnya di folder desain (bukan berkas yang hilang saat analisis).</p>
+
+  <h2 id="flow">3. Alur Pengguna (User Flow)</h2>
+  <p>Diagram di bawah menggabungkan navigasi yang sudah ada di <code class="inline">MainActivity.kt</code> dengan urutan logis dari desain untuk 6 modul yang belum tersambung (digambar putus-putus).</p>
+  <pre class="mermaid">
+flowchart TD
+    Splash[Splash Screen] -->|ada token & remember me| Home
+    Splash -->|belum login| Login
+    Login --> Register
+    Login -->|sukses| ProfileCheck{Profil lengkap?}
+    Register -->|sukses| OnbIbu[Onboarding: Data Diri Ibu]
+    ProfileCheck -->|belum ada ibu| OnbIbu
+    OnbIbu --> OnbAnak[Onboarding: Data Diri Anak]
+    ProfileCheck -->|ibu ada, anak belum| OnbAnak
+    OnbAnak --> Home
+    ProfileCheck -->|lengkap| Home
+
+    Home --> Account[Akun Saya]
+    Account --> DataIbu[Data Diri Ibu]
+    Account --> DataAnak[Data Diri Anak]
+    Account -->|logout| Login
+
+    Home --> GrafikTumbuh[Grafik Pertumbuhan]
+    GrafikTumbuh --> Antropometri[Input/Edit Antropometri]
+    GrafikTumbuh --> RiwayatTumbuh[Riwayat: bottom sheet]
+
+    Home --> Imunisasi[Riwayat Imunisasi]
+    Home --> Resep[Daftar Resep]
+    Resep --> ResepDetail[Detail Resep]
+    Home --> Psikososial1[Kondisi Psikososial 1]
+    Home --> Edukasi[Edukasi & Pengingat]
+    Home --> Intervensi[Intervensi]
+
+    DataAnak -.belum tersambung.-> KondisiKesehatan[Kondisi Kesehatan]
+    KondisiKesehatan -.-> RiwayatMenyusui[Riwayat Menyusui & MPASI]
+    RiwayatMenyusui -.-> AsupanPangan[Asupan Pangan]
+    AsupanPangan -.-> PanganFavorit[Pangan Favorit]
+    Psikososial1 -.-> Psikososial2[Kondisi Psikososial 2: Dukungan Keluarga]
+    Psikososial2 -.-> TujuanUtama[Tujuan Utama]
+    TujuanUtama -.-> Home
+  </pre>
+  <p><strong>Catatan alur:</strong> Rangkaian putus-putus (Kondisi Kesehatan → Riwayat Menyusui → Asupan Pangan → Pangan Favorit → Psikososial 2 → Tujuan Utama) tersirat dari urutan penomoran desain (08→19) sebagai satu alur <em>profil kesehatan mendalam</em> yang diisi setelah onboarding dasar — kemungkinan besar dimaksudkan sebagai wizard/asesmen bertahap terpisah dari navigasi harian Home, tapi belum ada titik masuk (entry point) untuk alur ini di navigasi aplikasi saat ini.</p>
+
+  <h2 id="modul">4. Temuan Audit Skema Database</h2>
+  <p>Tabel aktif saat ini (PostgreSQL, dibuat dari <code class="inline">backend/database/schema_psikonutrisense.sql</code> — bukan lewat Laravel migration): <code class="inline">users, mothers, children, growth_records, vaccination_records, nutrition_records, pmt_logs, mother_wellbeing_screenings, sanitation_facilities, local_recipes</code>.</p>
+
+  <h3>4.1 Data kelahiran salah tempat (desain #09 vs #10)</h3>
+  <div class="finding warn">
+    <div class="t">Berat/panjang lahir sudah benar di tabel <code class="inline">children</code>, tapi desain menambahkan 2 field kelahiran baru di layar Antropometri (recurring), bukan di layar Data Diri Anak (sekali isi)</div>
+    Desain #10 menampilkan <strong>Persalinan</strong> (Normal/Caesar) dan <strong>Usia Kehamilan saat lahir</strong> di form yang sama dengan pengukuran bulanan. Karena kedua data ini adalah atribut kelahiran (hanya benar diisi satu kali seumur hidup anak), menaruhnya di form yang diulang tiap bulan akan membuat data itu tertimpa/duplikat setiap kali ibu menimbang anak.
+    <br><br><strong>Rekomendasi:</strong> tambahkan kedua kolom ini ke tabel <code class="inline">children</code> (satu tempat, satu kali isi), bukan ke <code class="inline">growth_records</code>.
+  </div>
+  <pre class="code">ALTER TABLE children
+  ADD COLUMN jenis_persalinan VARCHAR(20) NULL,       -- 'Normal' | 'Caesar'
+  ADD COLUMN usia_kehamilan_minggu INT NULL,           -- mis. 39
+  ADD COLUMN status_kepemilikan_kia BOOLEAN DEFAULT FALSE;</pre>
+
+  <h3>4.2 <code class="inline">nutrition_records</code> tidak mewakili 3 layar desain (13, 14, 15)</h3>
+  <div class="finding bad">
+    <div class="t">Satu tabel generik dipakai untuk 3 kebutuhan data yang berbeda bentuk</div>
+    <ul style="margin:8px 0 0;">
+      <li>Desain #13 (Menyusui &amp; MPASI) butuh <em>status menyusui saat ini</em> (bukan cuma ASI eksklusif 0–6 bln), <em>jenis MPASI</em> (checklist multi-pilih: Bubur Tim/Makanan Lumat/Makanan Keluarga), dan <em>frekuensi camilan</em> — ketiganya tidak ada kolomnya.</li>
+      <li>Desain #14 (Asupan Pangan) butuh frekuensi <strong>per kelompok pangan</strong> (nasi/bubur, hewani, nabati, sayur, buah, susu) — saat ini cuma ada 1 kolom <code class="inline">frekuensi_protein_hewani_per_minggu</code>, 5 kelompok lainnya tidak tertampung.</li>
+      <li>Desain #15 (Pangan Favorit) butuh <strong>multi-pilih</strong> dari daftar tetap (Daun Kelor, Jagung, Ubi Jalar, Tahu/Tempe, Ikan, Kacang Hijau, + teks bebas "Lainnya") — kolom saat ini <code class="inline">pangan_lokal_favorit VARCHAR(255)</code> cuma teks bebas satu baris, tidak bisa menyimpan pilihan checklist dengan rapi.</li>
+    </ul>
+  </div>
+  <pre class="code">-- Perbaikan nutrition_records: pisah jadi field yang eksplisit
+ALTER TABLE nutrition_records
+  ADD COLUMN masih_menyusui BOOLEAN DEFAULT TRUE,
+  ADD COLUMN jenis_mpasi_json JSONB NULL,              -- ["Bubur Tim","Makanan Lumat"]
+  ADD COLUMN frekuensi_camilan_per_hari INT DEFAULT 0,
+  DROP COLUMN pangan_lokal_favorit,                     -- pindah ke tabel baru di bawah
+  DROP COLUMN frekuensi_protein_hewani_per_minggu;      -- pindah ke tabel baru di bawah
+
+-- Tabel baru: frekuensi per kelompok pangan (desain #14)
+CREATE TABLE food_group_frequencies (
+    id BIGSERIAL PRIMARY KEY,
+    child_id BIGINT NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    tanggal_pencatatan DATE NOT NULL,
+    nasi_bubur VARCHAR(20) NOT NULL,      -- '1-2 kali' | '2-3 kali' | dst.
+    lauk_hewani VARCHAR(20) NOT NULL,
+    lauk_nabati VARCHAR(20) NOT NULL,
+    sayur VARCHAR(20) NOT NULL,
+    buah VARCHAR(20) NOT NULL,
+    susu VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel baru: bahan pangan favorit, multi-pilih (desain #15)
+CREATE TABLE favorite_local_foods (
+    id BIGSERIAL PRIMARY KEY,
+    child_id BIGINT NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    bahan_json JSONB NOT NULL,             -- ["Daun Kelor","Jagung","Ubi Jalar"]
+    bahan_lainnya VARCHAR(255) NULL,       -- isian "Lainnya" jika dicentang
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</pre>
+
+  <h3>4.3 <code class="inline">mother_wellbeing_screenings</code> menyimpan skor gabungan, desain minta skor per item (17, 18)</h3>
+  <div class="finding bad">
+    <div class="t">Skor tunggal (<code class="inline">epds_skor_5item</code>, <code class="inline">skor_dukungan_keluarga</code>) menghilangkan detail yang desain tampilkan satu per satu</div>
+    Desain #17 menampilkan 4 pertanyaan skala 0–4 secara terpisah (cemas berlebihan, mudah lelah, sedih tanpa sebab, didukung keluarga) — bukan satu angka gabungan. Desain #18 merinci dukungan keluarga menjadi <strong>3 dimensi</strong> (Emosional, Informasi, Praktis), masing-masing 0–4. Skema saat ini tidak bisa menyimpan histori jawaban per pertanyaan, sehingga tidak bisa dianalisis item mana yang memburuk dari waktu ke waktu (kegunaan utama skrining psikososial berkala).
+  </div>
+  <pre class="code">ALTER TABLE mother_wellbeing_screenings
+  ADD COLUMN skor_cemas_berlebihan SMALLINT CHECK (skor_cemas_berlebihan BETWEEN 0 AND 4),
+  ADD COLUMN skor_mudah_lelah SMALLINT CHECK (skor_mudah_lelah BETWEEN 0 AND 4),
+  ADD COLUMN skor_sedih_tanpa_sebab SMALLINT CHECK (skor_sedih_tanpa_sebab BETWEEN 0 AND 4),
+  ADD COLUMN dukungan_emosional SMALLINT CHECK (dukungan_emosional BETWEEN 0 AND 4),
+  ADD COLUMN dukungan_informasi SMALLINT CHECK (dukungan_informasi BETWEEN 0 AND 4),
+  ADD COLUMN dukungan_praktis SMALLINT CHECK (dukungan_praktis BETWEEN 0 AND 4),
+  DROP COLUMN epds_skor_5item,             -- diganti 3 kolom skor_* di atas + tetap simpan kategori
+  DROP COLUMN skor_dukungan_keluarga;      -- diganti dukungan_emosional/informasi/praktis</pre>
+
+  <h3>4.4 Dua modul tanpa tabel sama sekali (11, 19)</h3>
+  <div class="finding bad">
+    <div class="t">Kondisi Kesehatan &amp; Tujuan Utama tidak punya representasi database</div>
+    Desain #11 (riwayat rawat inap, sakit 3 bulan terakhir, alergi, status imunisasi ringkasan) dan #19 (tujuan program, harapan bebas teks, kesediaan ikut intervensi) sama sekali tidak punya tabel. Ini bukan perluasan tabel yang ada — perlu tabel baru.
+  </div>
+  <pre class="code">CREATE TABLE health_conditions (
+    id BIGSERIAL PRIMARY KEY,
+    child_id BIGINT NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    pernah_dirawat_rs BOOLEAN DEFAULT FALSE,
+    sering_sakit_3bulan BOOLEAN DEFAULT FALSE,
+    alergi_makanan_obat BOOLEAN DEFAULT FALSE,
+    keterangan_alergi VARCHAR(255) NULL,
+    status_imunisasi_ringkasan VARCHAR(30) DEFAULT 'Lengkap', -- 'Lengkap' | 'Belum Lengkap' | 'Tidak Lengkap'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE main_goals (
+    id BIGSERIAL PRIMARY KEY,
+    mother_id BIGINT NOT NULL REFERENCES mothers(id) ON DELETE CASCADE,
+    tujuan_utama VARCHAR(100) NOT NULL,           -- mis. 'Anak sehat & tidak stunting'
+    harapan_untuk_anak TEXT NULL,
+    bersedia_ikut_intervensi BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</pre>
+
+  <h3>4.5 Field yang sudah benar, tidak perlu diubah</h3>
+  <div class="finding good">
+    <div class="t">users, mothers, children (inti), growth_records, vaccination_records, local_recipes</div>
+    Struktur inti ini sudah cocok dengan desain #01, #02, #08, #09, #16, #04, #05 dan sudah diverifikasi lewat testing CRUD end-to-end. Termasuk juga perbaikan keamanan yang sudah diterapkan sebelumnya (isolasi data per user pada <code class="inline">growth_records</code> &amp; <code class="inline">vaccination_records</code>).
+  </div>
+
+  <h2 id="rekomendasi">5. Rekomendasi Prioritas</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Prioritas</th><th>Item</th><th>Alasan</th></tr>
+    <tr><td><span class="badge bad">P0</span></td><td>Pindahkan field kelahiran (persalinan, usia kehamilan) dari form Antropometri ke Data Diri Anak</td><td>Risiko data tertimpa/salah tiap bulan jika tetap di form berulang</td></tr>
+    <tr><td><span class="badge warn">P1</span></td><td>Buat tabel <code class="inline">health_conditions</code> &amp; <code class="inline">main_goals</code>, sambungkan layar #11 &amp; #19</td><td>Modul sama sekali belum bisa dipakai — data yang diisi user hilang begitu app ditutup</td></tr>
+    <tr><td><span class="badge warn">P1</span></td><td>Restrukturisasi <code class="inline">nutrition_records</code> + tabel baru <code class="inline">food_group_frequencies</code>, <code class="inline">favorite_local_foods</code></td><td>3 layar (13,14,15) tidak bisa menyimpan data sesuai desain sama sekali saat ini</td></tr>
+    <tr><td><span class="badge warn">P1</span></td><td>Pecah skor gabungan <code class="inline">mother_wellbeing_screenings</code> jadi per-item</td><td>Menghilangkan kemampuan memantau tren psikososial per dimensi dari waktu ke waktu</td></tr>
+    <tr><td><span class="badge good">P2</span></td><td>Pindah dari raw SQL (<code class="inline">schema_psikonutrisense.sql</code>) ke Laravel migrations</td><td>Perubahan skema saat ini tidak tervisi/tidak bisa di-rollback; menyulitkan tim berkembang</td></tr>
+    <tr><td><span class="badge good">P2</span></td><td>Sambungkan layar Intervensi &amp; Edukasi ke tabel konten (bukan hardcode)</td><td>Konten edukasi saat ini tidak bisa diperbarui tanpa update aplikasi</td></tr>
+    <tr><td><span class="badge good">P2</span></td><td>Buat desain &amp; layar untuk Modul F (Sanitasi) — tabelnya sudah siap dipakai</td><td>Satu-satunya tabel di database yang tidak punya UI sama sekali (orphaned)</td></tr>
+    <tr><td><span class="badge good">P3</span></td><td>Rencanakan Forum Ibu Balita, Konsultasi/Chat Kader-Bidan, reminder H-3 otomatis</td><td>Backlog fitur baru dari Modul G, belum ada desain maupun skema — perlu dirancang dari nol</td></tr>
+  </table>
+  </div>
+
+  <footer>
+    Dokumen ini adalah hasil audit, bukan perubahan yang sudah diterapkan — semua contoh SQL di atas adalah <strong>rekomendasi untuk direview</strong> sebelum dieksekusi ke database yang sedang berjalan (yang sudah berisi data uji nyata).
+  </footer>
+
+</div>

@@ -59,9 +59,17 @@ fun PsikonutrisenseNavGraph(
     val profileComplete by viewModel.profileComplete.collectAsState()
     val onboardingMotherId by viewModel.onboardingMotherId.collectAsState()
     val onboardingSaveState by viewModel.onboardingSaveState.collectAsState()
+    val wizardComplete by viewModel.wizardComplete.collectAsState()
+    val healthConditionState by viewModel.healthConditionState.collectAsState()
+    val nutritionState by viewModel.nutritionState.collectAsState()
+    val foodGroupState by viewModel.foodGroupState.collectAsState()
+    val favoriteFoodState by viewModel.favoriteFoodState.collectAsState()
+    val wellbeingState by viewModel.wellbeingState.collectAsState()
+    val mainGoalState by viewModel.mainGoalState.collectAsState()
 
     var selectedRecipe by remember { mutableStateOf<LocalRecipe?>(null) }
     var selectedGrowthRecord by remember { mutableStateOf<GrowthRecord?>(null) }
+    var selectedArticle by remember { mutableStateOf<ArticleItem?>(null) }
 
     val currentMother = (mothersState as? UiState.Success)?.data?.firstOrNull()
     val currentChild = (childrenState as? UiState.Success)?.data?.firstOrNull()
@@ -93,11 +101,7 @@ fun PsikonutrisenseNavGraph(
         composable("profile_check") {
             LaunchedEffect(profileComplete) {
                 when (profileComplete) {
-                    true -> {
-                        navController.navigate("home") {
-                            popUpTo("profile_check") { inclusive = true }
-                        }
-                    }
+                    true -> viewModel.checkWizardComplete(currentMother?.id ?: 0)
                     false -> {
                         // Check if mother exists but child doesn't
                         if (onboardingMotherId != null) {
@@ -111,6 +115,15 @@ fun PsikonutrisenseNavGraph(
                         }
                     }
                     null -> { /* Still loading, show splash-like screen */ }
+                }
+            }
+            LaunchedEffect(wizardComplete) {
+                if (profileComplete == true) {
+                    when (wizardComplete) {
+                        true -> navController.navigate("home") { popUpTo("profile_check") { inclusive = true } }
+                        false -> navController.navigate("kondisi_kesehatan") { popUpTo("profile_check") { inclusive = true } }
+                        null -> { /* still checking */ }
+                    }
                 }
             }
             // Show a loading screen while checking
@@ -172,7 +185,7 @@ fun PsikonutrisenseNavGraph(
                 isOnboarding = true,
                 onOnboardingComplete = {
                     viewModel.resetOnboardingSaveState()
-                    navController.navigate("home") {
+                    navController.navigate("kondisi_kesehatan") {
                         popUpTo("onboarding_anak") { inclusive = true }
                     }
                 }
@@ -271,6 +284,17 @@ fun PsikonutrisenseNavGraph(
 
         composable("edukasi") {
             EdukasiScreen(
+                onBackClick = { navController.popBackStack() },
+                onArticleClick = { article ->
+                    selectedArticle = article
+                    navController.navigate("edukasi_detail")
+                }
+            )
+        }
+
+        composable("edukasi_detail") {
+            EdukasiDetailScreen(
+                article = selectedArticle,
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -309,26 +333,66 @@ fun PsikonutrisenseNavGraph(
         }
 
         composable("kondisi_kesehatan") {
+            LaunchedEffect(currentChild?.id) {
+                viewModel.resetActionState()
+                currentChild?.let { viewModel.loadHealthCondition(it.id) }
+            }
             KondisiKesehatanScreen(
-                onBackClick = { navController.popBackStack() }
+                actionState = actionState,
+                childId = currentChild?.id ?: 0,
+                existing = (healthConditionState as? UiState.Success)?.data,
+                onNextClick = {
+                    navController.navigate("riwayat_menyusui") { popUpTo("kondisi_kesehatan") { inclusive = true } }
+                },
+                onSaveClick = { condition -> viewModel.saveHealthCondition(condition) }
             )
         }
 
         composable("riwayat_menyusui") {
+            LaunchedEffect(currentChild?.id) {
+                viewModel.resetActionState()
+                currentChild?.let { viewModel.loadNutrition(it.id) }
+            }
             RiwayatMenyusuiScreen(
-                onBackClick = { navController.popBackStack() }
+                actionState = actionState,
+                childId = currentChild?.id ?: 0,
+                existing = (nutritionState as? UiState.Success)?.data,
+                onNextClick = {
+                    navController.navigate("asupan_pangan") { popUpTo("riwayat_menyusui") { inclusive = true } }
+                },
+                onSaveClick = { record -> viewModel.saveNutrition(record) }
             )
         }
 
         composable("asupan_pangan") {
+            LaunchedEffect(currentChild?.id) {
+                viewModel.resetActionState()
+                currentChild?.let { viewModel.loadFoodGroupFrequency(it.id) }
+            }
             AsupanPanganScreen(
-                onBackClick = { navController.popBackStack() }
+                actionState = actionState,
+                childId = currentChild?.id ?: 0,
+                existing = (foodGroupState as? UiState.Success)?.data,
+                onNextClick = {
+                    navController.navigate("pangan_favorit") { popUpTo("asupan_pangan") { inclusive = true } }
+                },
+                onSaveClick = { record -> viewModel.saveFoodGroupFrequency(record) }
             )
         }
 
         composable("pangan_favorit") {
+            LaunchedEffect(currentChild?.id) {
+                viewModel.resetActionState()
+                currentChild?.let { viewModel.loadFavoriteLocalFood(it.id) }
+            }
             PanganFavoritScreen(
-                onBackClick = { navController.popBackStack() }
+                actionState = actionState,
+                childId = currentChild?.id ?: 0,
+                existing = (favoriteFoodState as? UiState.Success)?.data,
+                onNextClick = {
+                    navController.navigate("kondisi_psikososial") { popUpTo("pangan_favorit") { inclusive = true } }
+                },
+                onSaveClick = { record -> viewModel.saveFavoriteLocalFood(record) }
             )
         }
 
@@ -349,14 +413,46 @@ fun PsikonutrisenseNavGraph(
         }
 
         composable("kondisi_psikososial") {
+            LaunchedEffect(currentMother?.id) {
+                viewModel.resetActionState()
+                currentMother?.let { viewModel.loadWellbeing(it.id) }
+            }
             KondisiPsikososialScreen(
-                onBackClick = { navController.popBackStack() }
+                actionState = actionState,
+                motherId = currentMother?.id ?: 0,
+                existing = (wellbeingState as? UiState.Success)?.data,
+                onNextClick = {
+                    navController.navigate("dukungan_keluarga") { popUpTo("kondisi_psikososial") { inclusive = true } }
+                },
+                onSaveClick = { screening -> viewModel.saveWellbeing(screening) }
+            )
+        }
+
+        composable("dukungan_keluarga") {
+            LaunchedEffect(Unit) { viewModel.resetActionState() }
+            DukunganKeluargaScreen(
+                actionState = actionState,
+                existing = (wellbeingState as? UiState.Success)?.data,
+                onNextClick = {
+                    navController.navigate("tujuan_utama") { popUpTo("dukungan_keluarga") { inclusive = true } }
+                },
+                onSaveClick = { screening -> viewModel.saveWellbeing(screening) }
             )
         }
 
         composable("tujuan_utama") {
+            LaunchedEffect(currentMother?.id) {
+                viewModel.resetActionState()
+                currentMother?.let { viewModel.loadMainGoal(it.id) }
+            }
             TujuanUtamaScreen(
-                onBackClick = { navController.popBackStack() }
+                actionState = actionState,
+                motherId = currentMother?.id ?: 0,
+                existing = (mainGoalState as? UiState.Success)?.data,
+                onFinishClick = {
+                    navController.navigate("home") { popUpTo(0) { inclusive = true } }
+                },
+                onSaveClick = { goal -> viewModel.saveMainGoal(goal) }
             )
         }
     }

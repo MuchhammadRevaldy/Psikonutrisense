@@ -266,4 +266,130 @@ class PsikonutrisenseRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun getNutritionRecords(childId: Int? = null): Result<List<NutritionRecord>> {
+        return runCatching {
+            val response = api.getNutritionRecords(getAuthHeader(), childId)
+            if (response.isSuccessful) response.body()?.data ?: emptyList() else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun createNutritionRecord(record: NutritionRecord): Result<NutritionRecord> {
+        return runCatching {
+            val response = api.createNutritionRecord(getAuthHeader(), record)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun updateNutritionRecord(id: Int, record: NutritionRecord): Result<NutritionRecord> {
+        return runCatching {
+            val response = api.updateNutritionRecord(getAuthHeader(), id, record)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun getWellbeingScreenings(motherId: Int? = null): Result<List<WellbeingScreening>> {
+        return runCatching {
+            val response = api.getWellbeingScreenings(getAuthHeader(), motherId)
+            if (response.isSuccessful) response.body()?.data ?: emptyList() else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun createWellbeingScreening(screening: WellbeingScreening): Result<WellbeingScreening> {
+        return runCatching {
+            val response = api.createWellbeingScreening(getAuthHeader(), screening)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun updateWellbeingScreening(id: Int, screening: WellbeingScreening): Result<WellbeingScreening> {
+        return runCatching {
+            val response = api.updateWellbeingScreening(getAuthHeader(), id, screening)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun getMainGoals(motherId: Int? = null): Result<List<MainGoal>> {
+        return runCatching {
+            val response = api.getMainGoals(getAuthHeader(), motherId)
+            if (response.isSuccessful) response.body()?.data ?: emptyList() else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun createMainGoal(goal: MainGoal): Result<MainGoal> {
+        return runCatching {
+            val response = api.createMainGoal(getAuthHeader(), goal)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun updateMainGoal(id: Int, goal: MainGoal): Result<MainGoal> {
+        return runCatching {
+            val response = api.updateMainGoal(getAuthHeader(), id, goal)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun getHealthConditions(childId: Int? = null): Result<List<HealthCondition>> {
+        return runCatching {
+            val response = api.getHealthConditions(getAuthHeader(), childId)
+            if (response.isSuccessful) response.body()?.data ?: emptyList() else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun createHealthCondition(condition: HealthCondition): Result<HealthCondition> {
+        return runCatching {
+            val response = api.createHealthCondition(getAuthHeader(), condition)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun updateHealthCondition(id: Int, condition: HealthCondition): Result<HealthCondition> {
+        return runCatching {
+            val response = api.updateHealthCondition(getAuthHeader(), id, condition)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun getFoodGroupFrequencies(childId: Int? = null): Result<List<FoodGroupFrequency>> {
+        return runCatching {
+            val response = api.getFoodGroupFrequencies(getAuthHeader(), childId)
+            if (response.isSuccessful) response.body()?.data ?: emptyList() else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun createFoodGroupFrequency(record: FoodGroupFrequency): Result<FoodGroupFrequency> {
+        return runCatching {
+            val response = api.createFoodGroupFrequency(getAuthHeader(), record)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun updateFoodGroupFrequency(id: Int, record: FoodGroupFrequency): Result<FoodGroupFrequency> {
+        return runCatching {
+            val response = api.updateFoodGroupFrequency(getAuthHeader(), id, record)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun getFavoriteLocalFoods(childId: Int? = null): Result<List<FavoriteLocalFood>> {
+        return runCatching {
+            val response = api.getFavoriteLocalFoods(getAuthHeader(), childId)
+            if (response.isSuccessful) response.body()?.data ?: emptyList() else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun createFavoriteLocalFood(record: FavoriteLocalFood): Result<FavoriteLocalFood> {
+        return runCatching {
+            val response = api.createFavoriteLocalFood(getAuthHeader(), record)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
+
+    suspend fun updateFavoriteLocalFood(id: Int, record: FavoriteLocalFood): Result<FavoriteLocalFood> {
+        return runCatching {
+            val response = api.updateFavoriteLocalFood(getAuthHeader(), id, record)
+            if (response.isSuccessful && response.body()?.data != null) response.body()!!.data!! else throw Exception(extractErrorMessage(response))
+        }
+    }
 }

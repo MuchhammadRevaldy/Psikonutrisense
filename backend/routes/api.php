@@ -11,6 +11,10 @@ use App\Http\Controllers\PmtLogController;
 use App\Http\Controllers\MotherWellbeingController;
 use App\Http\Controllers\LocalRecipeController;
 use App\Http\Controllers\NutritionRecordController;
+use App\Http\Controllers\HealthConditionController;
+use App\Http\Controllers\MainGoalController;
+use App\Http\Controllers\FoodGroupFrequencyController;
+use App\Http\Controllers\FavoriteLocalFoodController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,15 +38,19 @@ Route::middleware('auth.token')->group(function () {
 
     // Modul B: Antropometri & Kurva Tumbuh Kembang WHO
     Route::apiResource('growth-records', GrowthRecordController::class);
+    Route::apiResource('health-conditions', HealthConditionController::class);
 
     // Modul C: Imunisasi Digital Buku KIA
     Route::apiResource('vaccination-records', VaccinationRecordController::class);
 
-    // Modul D: Log Harian PMT, Gizi & Resep Pangan Lokal
+    // Modul D: Menyusui, MPASI, Asupan Pangan & Resep Pangan Lokal
     Route::apiResource('pmt-logs', PmtLogController::class);
     Route::apiResource('nutrition-records', NutritionRecordController::class);
+    Route::apiResource('food-group-frequencies', FoodGroupFrequencyController::class);
+    Route::apiResource('favorite-local-foods', FavoriteLocalFoodController::class);
     Route::apiResource('local-recipes', LocalRecipeController::class);
 
-    // Modul E: Barometer Kesejahteraan Psikososial Ibu
+    // Modul E: Kondisi Psikososial Ibu & Tujuan Utama
     Route::apiResource('wellbeing-screenings', MotherWellbeingController::class);
+    Route::apiResource('main-goals', MainGoalController::class);
 });

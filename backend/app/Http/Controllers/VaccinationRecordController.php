@@ -2,36 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Child;
-use App\Models\Mother;
+use App\Http\Controllers\Concerns\ScopesToOwnedChildren;
 use App\Models\VaccinationRecord;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class VaccinationRecordController extends Controller
 {
-    private function getUser(Request $request)
-    {
-        $token = $request->bearerToken();
-        if ($token) {
-            $accessToken = PersonalAccessToken::findToken($token);
-            if ($accessToken && $accessToken->tokenable) {
-                return $accessToken->tokenable;
-            }
-        }
-        return Auth::user();
-    }
-
-    private function ownedChildIds(Request $request)
-    {
-        $user = $this->getUser($request);
-        if (!$user) {
-            return collect();
-        }
-        $motherIds = Mother::where('user_id', $user->id)->pluck('id');
-        return Child::whereIn('mother_id', $motherIds)->pluck('id');
-    }
+    use ScopesToOwnedChildren;
 
     // GET /api/vaccination-records
     public function index(Request $request)

@@ -6,105 +6,155 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.psikonutrisense.app.data.model.NutritionRecord
+import com.psikonutrisense.app.ui.UiState
+import com.psikonutrisense.app.ui.components.DropdownField
+import com.psikonutrisense.app.ui.components.YaTidakRadioRow
 import com.psikonutrisense.app.ui.theme.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+private val JENIS_MPASI_OPTIONS = listOf("Bubur Tim", "Makanan Lumat", "Makanan Keluarga")
+private val USIA_MPASI_OPTIONS = (4..8).map { "$it bulan" }
+private val FREKUENSI_OPTIONS = (1..5).map { "$it kali" }
+private val KENDALA_OPTIONS = listOf("Tidak ada kendala", "Anak susah makan", "Keterbatasan bahan", "Keterbatasan waktu", "Lainnya")
+
 @Composable
 fun RiwayatMenyusuiScreen(
-    onBackClick: () -> Unit
+    actionState: UiState<String>,
+    childId: Int,
+    existing: NutritionRecord? = null,
+    onNextClick: () -> Unit,
+    onSaveClick: (NutritionRecord) -> Unit
 ) {
     val context = LocalContext.current
-    var isAsiEksklusif by remember { mutableStateOf(true) }
-    var inisiasiMenyusuDini by remember { mutableStateOf(true) }
-    var ageMpasiStart by remember { mutableStateOf("6") }
-    var formulaMilkUsed by remember { mutableStateOf(false) }
+    var masihMenyusui by remember(existing) { mutableStateOf(existing?.masihMenyusui ?: true) }
+    var usiaMpasi by remember(existing) { mutableStateOf("${existing?.usiaMulaiMpasiBulan ?: 6} bulan") }
+    var jenisMpasi by remember(existing) { mutableStateOf(existing?.jenisMpasiJson?.toSet() ?: emptySet()) }
+    var frekuensiMakan by remember(existing) { mutableStateOf("${existing?.frekuensiMakanPerHari ?: 3} kali") }
+    var frekuensiCamilan by remember(existing) { mutableStateOf("${existing?.frekuensiCamilanPerHari ?: 2} kali") }
+    var kendala by remember(existing) { mutableStateOf(existing?.kendalaPemberianMakan?.takeIf { it.isNotBlank() } ?: "Tidak ada kendala") }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Riwayat Menyusui & MPASI", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Kembali")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryRose,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
-                )
-            )
+    LaunchedEffect(actionState) {
+        if (actionState is UiState.Success) {
+            Toast.makeText(context, actionState.data, Toast.LENGTH_SHORT).show()
+            onNextClick()
+        } else if (actionState is UiState.Error) {
+            Toast.makeText(context, actionState.message, Toast.LENGTH_LONG).show()
         }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .background(BackgroundSoftPink)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ) {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text("Pola Pemberian ASI & MPASI", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = PrimaryRose)
-                    Spacer(modifier = Modifier.height(16.dp))
+    }
 
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Inisiasi Menyusu Dini (IMD)")
-                        Switch(checked = inisiasiMenyusuDini, onCheckedChange = { inisiasiMenyusuDini = it })
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .background(BackgroundSoftPink)
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp)
+    ) {
+        Text(
+            "Menyusui & MPASI",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = PrimaryRose,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(24.dp))
 
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("ASI Eksklusif (0-6 Bulan)")
-                        Switch(checked = isAsiEksklusif, onCheckedChange = { isAsiEksklusif = it })
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
+        YaTidakRadioRow(
+            label = "Apakah anak masih disusui?",
+            value = masihMenyusui,
+            onChange = { masihMenyusui = it }
+        )
+        Spacer(modifier = Modifier.height(20.dp))
 
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Mendapat Susu Formula")
-                        Switch(checked = formulaMilkUsed, onCheckedChange = { formulaMilkUsed = it })
-                    }
+        DropdownField(
+            label = "Usia mulai MPASI",
+            selectedValue = usiaMpasi,
+            options = USIA_MPASI_OPTIONS,
+            onValueSelected = { usiaMpasi = it }
+        )
+        Spacer(modifier = Modifier.height(20.dp))
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    OutlinedTextField(
-                        value = ageMpasiStart,
-                        onValueChange = { ageMpasiStart = it },
-                        label = { Text("Usia Pertama Kali Diberikan MPASI (Bulan)") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Button(
-                        onClick = {
-                            Toast.makeText(context, "Riwayat Menyusui Berhasil Disimpan", Toast.LENGTH_SHORT).show()
-                            onBackClick()
+        Text("Jenis MPASI yang diberikan", fontSize = 14.sp, color = TextDarkTitle)
+        Spacer(modifier = Modifier.height(8.dp))
+        Column {
+            for (option in JENIS_MPASI_OPTIONS) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = jenisMpasi.contains(option),
+                        onCheckedChange = { checked ->
+                            jenisMpasi = if (checked) jenisMpasi + option else jenisMpasi - option
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryRose),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth().height(50.dp)
-                    ) {
-                        Text("Simpan Riwayat Menyusui", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                    }
+                        colors = CheckboxDefaults.colors(checkedColor = PrimaryRose)
+                    )
+                    Text(option, fontSize = 14.sp)
                 }
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        DropdownField(
+            label = "Frekuensi makan utama per hari",
+            selectedValue = frekuensiMakan,
+            options = FREKUENSI_OPTIONS,
+            onValueSelected = { frekuensiMakan = it }
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        DropdownField(
+            label = "Frekuensi camilan per hari",
+            selectedValue = frekuensiCamilan,
+            options = FREKUENSI_OPTIONS,
+            onValueSelected = { frekuensiCamilan = it }
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        DropdownField(
+            label = "Kendala utama pemberian makan anak",
+            selectedValue = kendala,
+            options = KENDALA_OPTIONS,
+            onValueSelected = { kendala = it }
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = {
+                onSaveClick(
+                    NutritionRecord(
+                        id = existing?.id ?: 0,
+                        childId = childId,
+                        asiEksklusif = existing?.asiEksklusif ?: true,
+                        masihMenyusui = masihMenyusui,
+                        usiaMulaiMpasiBulan = usiaMpasi.removeSuffix(" bulan").toIntOrNull() ?: 6,
+                        jenisMpasiJson = jenisMpasi.toList(),
+                        frekuensiMakanPerHari = frekuensiMakan.removeSuffix(" kali").toIntOrNull() ?: 3,
+                        frekuensiCamilanPerHari = frekuensiCamilan.removeSuffix(" kali").toIntOrNull() ?: 2,
+                        recall24jamMenu = existing?.recall24jamMenu,
+                        kendalaPemberianMakan = kendala
+                    )
+                )
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryRose),
+            shape = RoundedCornerShape(26.dp),
+            enabled = actionState !is UiState.Loading,
+            modifier = Modifier.fillMaxWidth().height(52.dp)
+        ) {
+            if (actionState is UiState.Loading) {
+                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+            } else {
+                Text("Simpan", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
         }
     }
