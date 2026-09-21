@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "com.psikonutrisense.app-debug-64:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.psikonutrisense.app-main-66:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-debug-64:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-main-66:\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-debug-64:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-main-66:\\drawable\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-debug-64:\\mipmap_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-main-66:\\mipmap\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-debug-64:\\xml_backup_rules.xml.flat",
+        "source": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-main-66:\\xml\\backup_rules.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-debug-64:\\mipmap_ic_launcher.xml.flat",
+        "source": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-main-66:\\mipmap\\ic_launcher.xml"
+    },
+    {
+        "merged": "com.psikonutrisense.app-debug-64:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.psikonutrisense.app-main-66:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-debug-64:\\xml_data_extraction_rules.xml.flat",
+        "source": "C:\\Users\\Sandy\\.gradle\\daemon\\8.9\\com.psikonutrisense.app-main-66:\\xml\\data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.psikonutrisense.app-debug-64:/mipmap_ic_launcher_round.xml.flat",
+        "source": "com.psikonutrisense.app-main-66:/mipmap/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.psikonutrisense.app-debug-64:/mipmap_ic_launcher.xml.flat",
+        "source": "com.psikonutrisense.app-main-66:/mipmap/ic_launcher.xml"
+    }
+]

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -l database/seeders/DummyAccountSeeder.php)",
+      "Bash(php -l database/seeders/DatabaseSeeder.php)"
+    ]
+  }
+}

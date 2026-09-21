@@ -1,0 +1,165 @@
+# Fitur CRUD Lengkap, Dummy Data, Auto-Login, Logout & History Overlay
+
+Implementasi fitur-fitur berikut:
+1. **Profile Ibu & Anak** — load existing data saat buka halaman, edit & hapus
+2. **Fix Imunisasi** — user baru tidak seharusnya punya data imunisasi yang sudah terisi
+3. **Dummy Account** — akun testing dengan data lengkap (mother, child, growth records, immunizations)
+4. **Growth Chart History Overlay** — tombol "History" di halaman grafik pertumbuhan yang menampilkan overlay card dari bawah
+5. **Auto-Login (Remember Me)** — checkbox di halaman login + DataStore cache
+6. **Logout Button** — di halaman user/profil
+
+---
+
+## Proposed Changes
+
+### Komponen 1: Backend — Seed Dummy Data & Fix Auth Logout
+
+#### [NEW] [seed_dummy.php](file:///c:/Users/Sandy/Psikonutrisense/backend/database/seed_dummy.php)
+Script PHP untuk meng-insert akun dummy dengan data lengkap:
+- **User**: `dummy@test.com` / `password123`
+- **Mother**: Profil ibu lengkap
+- **Child**: Profil anak lengkap
+- **Growth Records**: 5 record penimbangan dengan tanggal berbeda (untuk menampilkan grafik)
+- **Vaccination Records**: 6 imunisasi wajib, 3 sudah dilakukan, 3 belum
+
+#### [MODIFY] [AuthController.php](file:///c:/Users/Sandy/Psikonutrisense/backend/app/Http/Controllers/AuthController.php)
+- Fix `logout()` dan `me()` method agar menggunakan `PersonalAccessToken::findToken()` bukan `Auth::guard('sanctum')`, konsisten dengan middleware kustom
+
+#### [MODIFY] [GrowthRecordController.php](file:///c:/Users/Sandy/Psikonutrisense/backend/app/Http/Controllers/GrowthRecordController.php)
+- Tambahkan authorization check: hanya return growth records milik anak yang dimiliki user yang sedang login
+
+---
+
+### Komponen 2: Android — SessionManager (Remember Me + Auto-Login)
+
+#### [MODIFY] [SessionManager.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/data/local/SessionManager.kt)
+- Tambahkan `REMEMBER_ME_KEY` (boolean preference)
+- Tambahkan fungsi `saveRememberMe(Boolean)` dan flow `rememberMe`
+- Modifikasi `clearSession()`: jika `rememberMe` false, clear token; jika true, keep token
+
+---
+
+### Komponen 3: Android — Repository (Delete methods)
+
+#### [MODIFY] [PsikonutrisenseRepository.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/data/repository/PsikonutrisenseRepository.kt)
+Tambahkan method baru:
+- `deleteMother(id: Int)` 
+- `deleteChild(id: Int)`
+- `deleteGrowthRecord(id: Int)`
+- `updateGrowthRecord(id: Int, record: GrowthRecord)`
+- `deleteVaccination(id: Int)`
+- `logout()` — call API logout + clear session
+
+---
+
+### Komponen 4: Android — API Interface (Delete endpoints)
+
+#### [MODIFY] [PsikonutrisenseApi.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/data/remote/PsikonutrisenseApi.kt)
+Tambahkan endpoint:
+- `@DELETE("vaccination-records/{id}")` `deleteVaccination()`
+
+---
+
+### Komponen 5: Android — MainViewModel (CRUD + Logout + RememberMe)
+
+#### [MODIFY] [MainViewModel.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/ui/MainViewModel.kt)
+Tambahkan:
+- `deleteMother(id)` → delete + reload + navigate back
+- `deleteChild(id)` → delete + reload + navigate back
+- `deleteGrowthRecord(id)` → delete + reload
+- `updateGrowthRecord(id, record)` → update + reload
+- `logout()` → call API logout + clear session + navigate to login
+- `login(email, pass, rememberMe)` → save rememberMe flag
+- Expose `rememberMe` state dari SessionManager
+
+---
+
+### Komponen 6: Android — LoginScreen (Remember Me Checkbox)
+
+#### [MODIFY] [LoginScreen.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/ui/screens/LoginScreen.kt)
+- Tambahkan `Checkbox` "Ingat Saya" antara password field dan tombol Masuk
+- Pass `rememberMe` flag ke `onLoginClick`
+
+---
+
+### Komponen 7: Android — DataDiriIbuScreen (Load + Edit + Delete)
+
+#### [MODIFY] [DataDiriIbuScreen.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/ui/screens/DataDiriIbuScreen.kt)
+- Tambahkan parameter `existingMother: Mother?`
+- Saat `existingMother != null`, pre-fill semua field dari data yang ada
+- Tombol berubah: "Simpan Data Ibu" → "Update Data Ibu"
+- Tambahkan tombol "Hapus Data Ibu" (merah) di bawah tombol simpan jika data sudah ada
+- Kirim `mother.copy(id = existingMother.id)` saat update
+
+---
+
+### Komponen 8: Android — DataDiriAnakScreen (Load + Edit + Delete)
+
+#### [MODIFY] [DataDiriAnakScreen.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/ui/screens/DataDiriAnakScreen.kt)
+- Tambahkan parameter `existingChild: Child?`
+- Saat `existingChild != null`, pre-fill semua field dari data yang ada
+- Tombol berubah: "Simpan Data Anak" → "Update Data Anak"
+- Tambahkan tombol "Hapus Data Anak" di bawah jika data sudah ada
+- Kirim `child.copy(id = existingChild.id)` saat update
+
+---
+
+### Komponen 9: Android — GrowthChartScreen (History Overlay)
+
+#### [MODIFY] [GrowthChartScreen.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/ui/screens/GrowthChartScreen.kt)
+- Tambahkan tombol "📋 History" di samping FAB atau sebagai button
+- Saat diklik, tampilkan **ModalBottomSheet** dari bawah layar
+- Bottom sheet berisi list semua growth records dengan:
+  - Tanggal penimbangan
+  - BB, TB, LILA, LiKa
+  - Status Gizi
+  - Tombol Edit & Delete per record
+- Tambahkan parameter `onDeleteRecord: (Int) -> Unit` dan `onEditRecord: (GrowthRecord) -> Unit`
+
+---
+
+### Komponen 10: Android — RiwayatImunisasiScreen (Fix: Show Real Data)
+
+#### [MODIFY] [RiwayatImunisasiScreen.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/ui/screens/RiwayatImunisasiScreen.kt)
+- **Bug fix**: Saat ini screen menampilkan **hardcoded** daftar imunisasi (defaultVaccines) dengan status "Sudah" untuk 3 pertama — ini yang menyebabkan user baru terlihat sudah punya imunisasi
+- Ubah agar menggunakan data dari `immunizationState` (dari API)
+- Jika `immunizationState` empty → tampilkan "Belum ada catatan imunisasi"
+- Tampilkan data real dari API (yang diisi via dummy seed)
+
+---
+
+### Komponen 11: Android — MainActivity NavGraph (Wire Everything)
+
+#### [MODIFY] [MainActivity.kt](file:///c:/Users/Sandy/Psikonutrisense/app/src/main/java/com/psikonutrisense/app/MainActivity.kt)
+- Update route `data_ibu`: pass `existingMother` dari `mothersState`
+- Update route `data_anak`: pass `existingChild` dari `childrenState`
+- Update route `growth_chart`: pass delete/edit callbacks
+- Tambahkan route `user_profile` untuk halaman profil user + logout button
+- Pass `rememberMe` ke LoginScreen dan ViewModel
+- Wire logout navigation → kembali ke login screen
+- Pass `onLogout` ke HomeScreen (navigasi ke halaman user atau langsung dari home)
+
+---
+
+## Ringkasan Fitur CRUD
+
+| Resource | Create | Read | Update | Delete |
+|---|---|---|---|---|
+| **Data Ibu** | ✅ onboarding | ✅ load saat buka | ✅ edit form | ✅ tombol hapus |
+| **Data Anak** | ✅ onboarding | ✅ load saat buka | ✅ edit form | ✅ tombol hapus |
+| **Growth Record** | ✅ form antropometri | ✅ list di grafik | ✅ edit dari history | ✅ delete dari history |
+| **Imunisasi** | ✅ sudah ada | ✅ dari API real | ✅ update status | – |
+| **User Session** | ✅ register/login | ✅ auto-login | – | ✅ logout |
+
+---
+
+## Verification Plan
+
+### Manual Verification
+1. **Register akun baru** → harus masuk onboarding (ibu → anak) → imunisasi kosong
+2. **Login dummy account** (`dummy@test.com` / `password123`) → data ibu & anak terisi → growth chart ada grafik → history overlay muncul
+3. **Edit data ibu** → buka form, data ter-load, ubah, simpan → data berubah
+4. **Delete data anak** → konfirmasi → data terhapus → kembali ke home
+5. **Remember Me** → centang, login, kill app, buka lagi → langsung masuk home
+6. **Logout** → tekan tombol → kembali ke login screen
+7. **Growth History** → tekan tombol history → overlay muncul dari bawah → bisa edit/delete
